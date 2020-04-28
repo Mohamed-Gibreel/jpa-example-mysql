@@ -19,21 +19,47 @@ public class Main {
     private static EntityManagerFactory emf = Persistence.createEntityManagerFactory("legoset-mysql");
 
     private static void createLegoSets() {
-       // TODO
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.persist(new LegoSet("60073", "Service Truck", Year.of(2015), 233));
+            em.persist(new LegoSet("75211", "Imperial TIE Fighter", Year.of(2018), 519));
+            em.persist(new LegoSet("21034", "London", Year.of(2017), 468));
+            em.getTransaction().commit();
+        } finally {
+            em.close();
+        }
+
     }
 
     private static List<LegoSet> getLegoSets() {
-        // TODO
-        return null;
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.createQuery("SELECT l FROM LegoSet l ORDER BY l.number", LegoSet.class).getResultList();
+        } finally {
+            em.close();
+        }
     }
 
     private static Long getTotalPieces() {
-        // TODO
-        return null;
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.createQuery("SELECT SUM(pieces) FROM LegoSet l", Long.class).getSingleResult();
+        } finally {
+            em.close();
+        }
     }
 
     private static void deleteLegoSets() {
-        // TODO
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            long count = em.createQuery("DELETE FROM LegoSet").executeUpdate();
+            logger.info("Deleted {} Lego set(s)", count);
+            em.getTransaction().commit();
+        } finally {
+            em.close();
+        }
     }
 
     public static void main(String[] args) {
